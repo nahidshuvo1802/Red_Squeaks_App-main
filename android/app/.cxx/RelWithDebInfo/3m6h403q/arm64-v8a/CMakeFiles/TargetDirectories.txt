@@ -1,0 +1,2 @@
+/Users/mehedi/StudioProjects/hide_and_squeaks/android/app/.cxx/RelWithDebInfo/3m6h403q/arm64-v8a/CMakeFiles/edit_cache.dir
+/Users/mehedi/StudioProjects/hide_and_squeaks/android/app/.cxx/RelWithDebInfo/3m6h403q/arm64-v8a/CMakeFiles/rebuild_cache.dir
