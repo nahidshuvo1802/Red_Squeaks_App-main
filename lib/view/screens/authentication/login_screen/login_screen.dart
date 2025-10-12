@@ -7,7 +7,8 @@ import 'package:hide_and_squeaks/utils/app_strings/app_strings.dart';
 import 'package:hide_and_squeaks/view/components/custom_button/custom_button.dart';
 import 'package:hide_and_squeaks/view/components/custom_from_card/custom_from_card.dart';
 import 'package:hide_and_squeaks/view/components/custom_text/custom_text.dart';
-import 'package:hide_and_squeaks/view/screens/authentication/create_account_screen/create_account_screen_social..dart';
+import 'package:hide_and_squeaks/view/screens/authentication/create_account_screen/create_account_screen.dart';
+import 'package:hide_and_squeaks/view/screens/authentication/create_account_screen/create_account_screen_.dart';
 import '../../../../core/app_routes/app_routes.dart';
 import '../../../../utils/app_images/app_images.dart';
 import '../../../components/custom_image/custom_image.dart';
@@ -160,7 +161,7 @@ class LoginScreen extends StatelessWidget {
                       GestureDetector(
                         onTap: () {
                           final authProvider = provider;
-                          Get.to( CreateAccountScreenSocial(provider:authProvider));
+                          Get.to( CreateAccountScreen());
                         },
                         child: CustomText(
                           text: AppStrings.signUp,

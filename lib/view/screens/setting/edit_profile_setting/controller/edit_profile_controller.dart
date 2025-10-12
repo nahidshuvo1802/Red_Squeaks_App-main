@@ -10,6 +10,7 @@ import 'package:hide_and_squeaks/service/api_url.dart';
 import 'package:hide_and_squeaks/utils/ToastMsg/toast_message.dart';
 import 'package:hide_and_squeaks/utils/app_const/app_const.dart';
 import 'package:hide_and_squeaks/view/screens/home/home_screen/home_screen.dart';
+import 'package:hide_and_squeaks/view/screens/home/profile_screen/profile_screen.dart';
 import 'package:image_picker/image_picker.dart';
 
 class EditProfileController extends GetxController {
@@ -123,6 +124,7 @@ class EditProfileController extends GetxController {
     if (response.statusCode == 200) {
       userUpdateLoading.value = false;
       Get.snackbar("Success", "Profile updated successfully.");
+       Get.to(ProfileScreen());
       selectedImage.value = null;
     } else {
       Get.snackbar("Error", "Failed to update profile.");

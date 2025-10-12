@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:hide_and_squeaks/helper/images_handle/image_handle.dart';
 import 'package:hide_and_squeaks/view/components/custom_button/custom_button.dart';
 import 'package:hide_and_squeaks/view/components/custom_from_card/custom_from_card.dart';
+import 'package:hide_and_squeaks/view/screens/setting/setting_screen/setting_screen.dart';
 import '../../../../utils/app_colors/app_colors.dart';
 import '../../../../utils/app_const/app_const.dart';
 import '../../../../utils/app_images/app_images.dart';
@@ -55,7 +57,7 @@ class EditProfileSetting extends StatelessWidget {
                         );
                       } else {
                         return CustomNetworkImage(
-                          imageUrl: AppConstants.profileImage,
+                          imageUrl: ImageHandler.imagesHandle(profileController.profileModel.value?.data?.photo??""),
                           height: 120.h,
                           width: 120.w,
                           boxShape: BoxShape.circle,
@@ -96,15 +98,15 @@ class EditProfileSetting extends StatelessWidget {
                 children: [
                   CustomFormCard(
                       title: "Your Name",
-                      hintText: "Enter Name",
+                      hintText: profileController.profileModel.value?.data?.name??"",
                       controller: editProfileController.userNameController),
                   CustomFormCard(
                       title: "Phone Number",
-                      hintText: "Enter Phone Number",
+                      hintText: profileController.profileModel.value?.data?.phoneNumber??"Enter Your Phone Number",
                       controller: editProfileController.userPhoneController),
                   CustomFormCard(
                       title: "Location",
-                      hintText: "Enter Location",
+                      hintText: profileController.profileModel.value?.data?.location??"",
                       controller: editProfileController.userLocationController),
                   SizedBox(
                     height: 80.h,
@@ -113,6 +115,7 @@ class EditProfileSetting extends StatelessWidget {
                   
                      CustomButton(
                       onTap: () {
+                     
                         print("📤 Update button tapped!");
                         editProfileController.updateUserProfile();
                       },

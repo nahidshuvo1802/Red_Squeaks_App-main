@@ -81,7 +81,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
 
                   CustomText(
-                    text: "Bangladesh",
+                    text: profileController.profileModel.value?.data?.location??"",
                     fontSize: 16.w,
                     fontWeight: FontWeight.w400,
                   ),

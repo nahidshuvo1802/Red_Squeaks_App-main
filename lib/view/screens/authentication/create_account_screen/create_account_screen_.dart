@@ -58,6 +58,11 @@ class CreateAccountScreenSocial extends StatelessWidget {
                     controller: authController.nameController,
                   ),
                   CustomFormCard(
+                    title: AppStrings.location,
+                    hintText: AppStrings.enteryoulocation,
+                    controller: authController.locationController,
+                  ),
+                   CustomFormCard(
                     title: AppStrings.email,
                     hintText: AppStrings.enterYourEmail,
                     controller: authController.emailController,
@@ -88,6 +93,7 @@ class CreateAccountScreenSocial extends StatelessWidget {
                             : () {
                                 authController.socialAuth(
                                     name: authController.emailController.value.text,
+                                    location : authController.locationController.value.text,
                                     email: authController.emailController.value.text,
                                     photo: AppConstants.profileImage,
                                     provider: "appleAuth"

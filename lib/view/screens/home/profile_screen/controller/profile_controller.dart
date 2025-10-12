@@ -6,6 +6,7 @@ import 'package:hide_and_squeaks/service/api_client.dart';
 import 'package:hide_and_squeaks/service/api_url.dart';
 import 'package:hide_and_squeaks/utils/ToastMsg/toast_message.dart';
 import 'package:hide_and_squeaks/utils/app_const/app_const.dart';
+import 'package:hide_and_squeaks/view/screens/authentication/login_screen/login_screen.dart';
 import 'package:hide_and_squeaks/view/screens/home/profile_screen/model/profile_model.dart';
 
 class ProfileController extends GetxController {
@@ -13,6 +14,7 @@ class ProfileController extends GetxController {
   /// STATES
   /// ===============================
   RxBool isProfileLoading = false.obs;
+  RxBool isDeleteProfileLoading = false.obs;
   Rx<MyProfileModel?> profileModel = Rx<MyProfileModel?>(null);
 
 
@@ -40,4 +42,32 @@ class ProfileController extends GetxController {
     isProfileLoading.value = false;
   }
   }
+
+
+  /////=================Delete Profile====================
+ Future<void> deleteProfile({
+  required String userId,
+}) async {
+  
+  try {
+    isDeleteProfileLoading.value = true; // start loading
+    final response = await ApiClient.deleteData(
+      ApiUrl.deleteProfile(userId: userId),
+    );
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      showCustomSnackBar("Account Deleted Successfully", isError: false);
+      Get.offAll(LoginScreen());
+    } else {
+      final msg = response.body['message'] ?? "Account Deletion Failed";
+      showCustomSnackBar(msg, isError: true);
+    }
+  } catch (e) {
+    showCustomSnackBar("Account Deletion Failed", isError: true);
+    debugPrint("Delete Profile Error: $e");
+  } finally {
+    isDeleteProfileLoading.value = false; // stop loading
+  }
+}
+
 }

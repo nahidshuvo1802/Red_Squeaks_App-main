@@ -24,9 +24,10 @@ class ApiUrl {
   
   static const String getMyProfile = "/api/v1/auth/myprofile";
   static const String updateMyProfile = "/api/v1/auth/update_my_profile";
-   static String updateUserProfile ="/api/v1/auth/update_my_profile";
-     static String updateProfile  ="/api/v1/auth/update_my_profile";
-       static String updateProfileImage = "/api/v1/auth/update_my_profile";
+  static String updateUserProfile ="/api/v1/auth/update_my_profile";
+  static String updateProfile  ="/api/v1/auth/update_my_profile";
+  static String updateProfileImage = "/api/v1/auth/update_my_profile";
+  static String deleteProfile ({required String userId}) => "/api/v1/auth/delete_account/$userId";
 
 
   ///====================Social Feed =========================================
@@ -215,9 +216,11 @@ class ApiUrl {
       "/wishlist/retrive/user/$userId"; // Get wish list
   static String deleteWishList({required String userId}) => "/wishlist/delete";
 
+
+
   //======================================Change Password===============================================
 
-  static const String changePassword = "/auth/change-password";
+  static const String changePassword = "/api/v1/user/change_password";
 
   //============================= Next Appointment ==========================
 

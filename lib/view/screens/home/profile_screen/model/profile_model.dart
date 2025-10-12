@@ -35,6 +35,7 @@ class MyProfileModel {
 class ProfileData {
   final String? id;
   final String? name;
+  final String? location;
   final String? email;
   final String? phoneNumber;
   final String? photo;
@@ -42,6 +43,7 @@ class ProfileData {
   ProfileData({
     this.id,
     this.name,
+    this.location,
     this.email,
     this.phoneNumber,
     this.photo,
@@ -50,6 +52,7 @@ class ProfileData {
   factory ProfileData.fromJson(Map<String, dynamic> json) => ProfileData(
         id: json["_id"] ?? json["id"],
         name: json["name"],
+        location: json['location'],
         email: json["email"],
         phoneNumber: json["phoneNumber"],
         photo: json["photo"],
@@ -58,6 +61,7 @@ class ProfileData {
   Map<String, dynamic> toJson() => {
         "_id": id,
         "name": name,
+        "location" : location,
         "email": email,
         "phoneNumber": phoneNumber,
         "photo": photo,

@@ -12,6 +12,8 @@ class   AppStrings {
   static const String emailConfirmationTitle = "Enter Your Email for verification.";
   static const String enter4DigitsTitle = "Enter the 4 digits code that you received on your email";
   static const String passwordNotMatch = "Passwords do not match";
+  static const String enteryoulocation = "Enter Your Location";
+  static const String location = "Location";
 
   //================== Custom Controller String ===================//
   static const String item = "Item";

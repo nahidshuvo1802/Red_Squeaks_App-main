@@ -41,7 +41,7 @@ class SettingScreen extends StatelessWidget {
                 ),
                 CustomNetworkImage(
                   imageUrl:  ImageHandler.imagesHandle(
-                  profileController.profileModel.value?.data?.photo.toString(),
+                  profileController.profileModel.value?.data?.photo,
                 ),
                   height: 140.h,
                   width: 140.w,
@@ -119,12 +119,19 @@ class SettingScreen extends StatelessWidget {
                   title: "Log Out",
                 ),
                 SizedBox(height: 30.h,),
-                CustomSettingList(
-                  showArrow: false,
-                  onTap: (){},
-                  icon: Icons.delete,
-                  color: AppColors.red,
-                  title: "Delete Account",
+                
+                Obx(() =>
+                  CustomSettingList(
+                    showArrow: false,
+                    onTap: (){
+                      final userId = profileController.profileModel.value?.data?.id??"";
+                      debugPrint("===================================> ${userId}");
+                      profileController.deleteProfile(userId : userId );
+                    },
+                    icon: Icons.delete,
+                    color: AppColors.red,
+                    title: profileController.isDeleteProfileLoading == false ? "Delete Account" : "Deleting Profile...",
+                  ),
                 ),
               ],
             )

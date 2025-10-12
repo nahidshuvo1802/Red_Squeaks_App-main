@@ -9,6 +9,7 @@ import 'package:hide_and_squeaks/utils/ToastMsg/toast_message.dart';
 import 'package:hide_and_squeaks/utils/app_colors/app_colors.dart';
 import 'package:hide_and_squeaks/utils/app_const/app_const.dart';
 import 'package:hide_and_squeaks/view/screens/authentication/reset_password_screen/reset_password_screen.dart';
+import 'package:hide_and_squeaks/view/screens/setting/setting_screen/setting_screen.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -31,6 +32,11 @@ class AuthController extends GetxController {
   final loginEmailController = TextEditingController();
   final loginPasswordController = TextEditingController();
   final otpController = TextEditingController();
+  final locationController = TextEditingController();
+  
+  final oldPassword = TextEditingController();
+  final newPassword = TextEditingController();
+  final confirmNewPassword = TextEditingController();
 
   /// ---------- STATES ---------- ///
   RxBool isSignupLoading = false.obs;
@@ -40,6 +46,7 @@ class AuthController extends GetxController {
   RxBool isForgetPasswordSendingLoading = false.obs;
   RxBool isResetPasswordLoading = false.obs;
   RxBool isSocialLoading = false.obs;
+  RxBool isChangePasswordLoading = false.obs;
 
   String tempEmail = ""; // for OTP verification
 
@@ -52,7 +59,7 @@ class AuthController extends GetxController {
     if (nameController.text.isEmpty ||
         emailController.text.isEmpty ||
         passwordController.text.isEmpty ||
-        confirmPasswordController.text.isEmpty) {
+        confirmPasswordController.text.isEmpty || locationController.text.isEmpty) {
       showCustomSnackBar("Please fill all fields", isError: true);
       return;
     }
@@ -66,6 +73,7 @@ class AuthController extends GetxController {
     final body = {
       "name": nameController.text.trim(),
       "email": emailController.text.trim(),
+      "location" : locationController.text.trim(),
       "password": passwordController.text.trim(),
     };
 
@@ -137,7 +145,7 @@ Future<void> verifyOtpForget() async {
   isOtpVerifying.value = true;
 
   final body = {
-    "verificationCode": int.tryParse(otpController.text.trim()) ?? 0000,
+    "verificationCode": int.tryParse(otpController.text) ?? 0000,
   };
 
   try {
@@ -148,7 +156,7 @@ Future<void> verifyOtpForget() async {
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       final responseBody = response.body;
-      final accessToken = responseBody['data']?['accessToken'];
+      final accessToken = responseBody['data'];
       final message = responseBody['message'] ?? "Account verified successfully!";
 
       if (accessToken != null && accessToken.isNotEmpty) {
@@ -271,7 +279,61 @@ Future<void> resetPassword({
   }
 }
 
+/// =====================================================
+/// ✅ CHANGE PASSWORD
+/// =====================================================
+/// এই মেথডটি ব্যবহারকারী তার পুরনো পাসওয়ার্ড ও নতুন পাসওয়ার্ড দিয়ে
+/// লগইন থাকা অবস্থায় পাসওয়ার্ড পরিবর্তন করতে পারবে।
+///
+/// Required Body:
+/// {
+///   "oldPassword": "123456",
+///   "newPassword": "654321"
+/// }
+///
+/// সফল হলে Success Snackbar দেখাবে ও user-কে আবার Login screen-এ পাঠাবে।
+///
+Future<void> changePassword({
+  required String oldPassword,
+  required String newPassword,
+}) async {
+  if (oldPassword.isEmpty || newPassword.isEmpty) {
+    showCustomSnackBar("Please fill all fields", isError: true);
+    return;
+  }
 
+  // Loading indicator toggle করতে চাইলে নতুন RxBool লাগাতে পারো
+  
+  isChangePasswordLoading.value = true;
+
+  final body = {
+    "newpassword": newPassword.trim().toString(),
+    "oldpassword": oldPassword.trim().toString(),
+  };
+
+  try {
+    final response = await ApiClient.patchData(
+      ApiUrl.changePassword, // 🔹 এই endpoint টা তোমার ApiUrl এ যোগ করে নিও
+      jsonEncode(body),
+    );
+
+    isChangePasswordLoading.value = false;
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      showCustomSnackBar("Password changed successfully!", isError: false);
+      // ✅ Password change successful হলে logout করিয়ে দেবে
+      
+      Get.offAllNamed(AppRoutes.settingScreen);
+    } else {
+      final msg = response.body['message'] ?? "Failed to change password";
+      showCustomSnackBar(msg, isError: true);
+    }
+  } catch (e) {
+    isChangePasswordLoading.value = false;
+    showCustomSnackBar("Network error. Try again.", isError: true);
+    debugPrint("Change Password Error: $e");
+  }
+}
 
 
 
@@ -340,6 +402,7 @@ Future<void> resetPassword({
     required String name,
     required String email,
     required String photo,
+    required String location,
     required String provider,
   }) async {
     isSocialSAuthLoading.value = true;
@@ -348,6 +411,7 @@ Future<void> resetPassword({
       "name": name,
       "email": email,
       "photo": photo,
+      "location" : location,
       "provider": provider,
     };
 
@@ -397,4 +461,3 @@ Future<void> resetPassword({
     providerController.clear();
   }
 }
-

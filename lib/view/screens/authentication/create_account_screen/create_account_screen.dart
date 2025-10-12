@@ -54,10 +54,17 @@ class CreateAccountScreen extends StatelessWidget {
                     controller: authController.nameController,
                   ),
                   CustomFormCard(
+                    title: AppStrings.location,
+                    hintText: AppStrings.enteryoulocation,
+                    controller: authController.locationController,
+                  ),
+                  
+                  CustomFormCard(
                     title: AppStrings.email,
                     hintText: AppStrings.enterYourEmail,
                     controller: authController.emailController,
                   ),
+                  
                   CustomFormCard(
                     title: AppStrings.password,
                     hintText: AppStrings.enterYourPassword,
