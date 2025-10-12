@@ -59,7 +59,7 @@ class AppRoutes {
     GetPage(name: createAccountScreen, page: () => CreateAccountScreen()),
     GetPage(name: verifyPicCodeScreen, page: () => VerifyPicCodeScreen()),
     GetPage(name: forgotPasswordScreen, page: () => ForgotPasswordScreen()),
-    GetPage(name: resetPasswordScreen, page: () => ResetPasswordScreen()),
+    GetPage(name: resetPasswordScreen, page: () => ResetPasswordScreen(userId: Get.arguments)),
     GetPage(name: navbar, page: () => Navbar()),
     GetPage(name: homeScreen, page: () => HomeScreen()),
     GetPage(name: qrCodeScreen, page: () => QrCodeScreen()),

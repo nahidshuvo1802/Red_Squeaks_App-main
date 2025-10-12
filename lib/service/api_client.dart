@@ -427,9 +427,9 @@ class ApiClient extends GetxService {
     bearerToken = await SharePrefsHelper.getString(AppConstants.bearerToken);
 
     var mainHeaders = {
-      //'Content-Type': 'application/x-www-form-urlencoded',
+      'Content-Type': 'application/x-www-form-urlencoded',
       'Accept': 'application/json',
-      'Authorization': 'Bearer $bearerToken'
+      'Authorization': bearerToken
     };
     try {
       debugPrint('====> API Call: $uri\nHeader: ${headers ?? mainHeaders}');
@@ -502,58 +502,47 @@ static Future<Response> submitFeedback({
     }
   }
 
+
   static Future<Response> patchData(String uri, dynamic body,
-      {Map<String, String>? headers, bool isContentType = true}) async {
-    bearerToken = await SharePrefsHelper.getString(AppConstants.bearerToken);
+    {Map<String, String>? headers, bool isContentType = true}) async {
+  bearerToken = await SharePrefsHelper.getString(AppConstants.bearerToken);
 
-    var mainHeaders = isContentType
-        ? {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $bearerToken'
-    }
-        : {
-      'Accept': 'application/json',
-      'Authorization': 'Bearer $bearerToken'
-    };
-    try {
-      debugPrint('====> API Call: $uri\nHeader: ${headers ?? mainHeaders}');
-      debugPrint('====> API Body: $body');
+  var mainHeaders = isContentType
+      ? {
+          'Content-Type': 'application/json',
+          'Authorization': bearerToken
+        }
+      : {
+          'Accept': 'application/json',
+          'Authorization': bearerToken
+        };
 
-      http.Response response = await client
-          .patch(
-        Uri.parse(ApiUrl.baseUrl + uri),
-        body: body,
-        headers: headers ?? mainHeaders,
-      )
-          .timeout(const Duration(seconds: timeoutInSeconds));
-      return handleResponse(response, uri);
-    } catch (e) {
-      debugPrint('------------${e.toString()}');
+  try {
+    debugPrint('====> API Call: $uri\nHeader: ${headers ?? mainHeaders}');
+    debugPrint('====> API Body: $body');
 
-      return const Response(statusCode: 1, statusText: somethingWentWrong);
-    }
+    // ✅ FIX: ensure body is JSON string if content-type is application/json
+    final requestBody =
+        (isContentType && body is! String) ? jsonEncode(body) : body;
+
+    http.Response response = await client
+        .patch(
+          Uri.parse(ApiUrl.baseUrl + uri),
+          body: requestBody,
+          headers: headers ?? mainHeaders,
+        )
+        .timeout(const Duration(seconds: timeoutInSeconds));
+
+    return handleResponse(response, uri);
+  } catch (e) {
+    debugPrint('------------${e.toString()}');
+    return const Response(statusCode: 1, statusText: somethingWentWrong);
   }
-
- ///=== reshedulebooking
-  static Future<Response> rescheduleBooking({
-  required String bookingId,
-  required String newDate, // ধরলাম তারিখ পাঠাতে হবে
-  required String newTime, // ধরলাম সময় পাঠাতে হবে
-}) async {
-  final body = jsonEncode({
-    "date": newDate,
-    "time": newTime,
-  });
-
-  return await patchData(
-    ApiUrl.rescheduleBooking(bookingId: bookingId),
-    body,
-    isContentType: true,
-     // Content-Type: application/json সেট থাকবে
-     
-
-  );
 }
+
+
+
+
 
   static Future<Response> putData(String uri, dynamic body,
       {Map<String, String>? headers}) async {
@@ -640,7 +629,7 @@ static Future<Response> submitFeedback({
 
     var mainHeaders = {
       'Accept': 'application/json',
-      'Authorization': 'Bearer $bearerToken'
+      'Authorization': bearerToken
     };
 
     try {
@@ -699,7 +688,7 @@ static Future<Response> submitFeedback({
 
       var mainHeaders = {
         'Content-Type': 'application/x-www-form-urlencoded',
-        'Authorization': 'Bearer $bearerToken'
+        'Authorization': bearerToken
       };
 
       debugPrint('====> API Call: $uri\nHeader: ${headers ?? mainHeaders}');
@@ -771,7 +760,7 @@ static Future<Response> submitFeedback({
 
     var mainHeaders = {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer $bearerToken'
+      'Authorization': bearerToken
     };
     try {
       debugPrint('====> API Call: $uri\nHeader: ${headers ?? mainHeaders}');

@@ -1,22 +1,20 @@
-
-
-
-
-// ...existing code...
-
 import 'package:hide_and_squeaks/service/api_url.dart';
 import 'package:hide_and_squeaks/utils/app_images/app_images.dart';
 
-class ImageHandler{
+class ImageHandler {
   static String imagesHandle(String? url) {
     if (url == null || url.isEmpty) {
       return AppImages.vectorImage;
     }
-    
+
     if (url.startsWith('http')) {
-      return url; // If the URL starts with 'http', return as is
+      return url;
     } else {
-      return ApiUrl.imageUrl + url;
+      // Ensure a slash between base URL and relative path
+      String baseUrl = ApiUrl.baseUrl;
+      if (!baseUrl.endsWith('/')) baseUrl += '/';
+      if (url.startsWith('/')) url = url.substring(1);
+      return baseUrl + url;
     }
   }
 }

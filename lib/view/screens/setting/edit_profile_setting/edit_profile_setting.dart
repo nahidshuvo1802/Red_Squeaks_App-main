@@ -10,10 +10,11 @@ import '../../../components/custom_image/custom_image.dart';
 import '../../../components/custom_netwrok_image/custom_network_image.dart';
 import '../../../components/custom_royel_appbar/custom_royel_appbar.dart';
 import 'controller/edit_profile_controller.dart';
+
 class EditProfileSetting extends StatelessWidget {
   EditProfileSetting({super.key});
 
-  final editProfileController =Get.find<EditProfileController>();
+  final editProfileController = Get.find<EditProfileController>();
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +47,8 @@ class EditProfileSetting extends StatelessWidget {
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             image: DecorationImage(
-                              image: FileImage(editProfileController.selectedImage.value!),
+                              image: FileImage(
+                                  editProfileController.selectedImage.value!),
                               fit: BoxFit.cover,
                             ),
                           ),
@@ -85,28 +87,40 @@ class EditProfileSetting extends StatelessWidget {
                   ],
                 ),
               ),
-              SizedBox(height: 20.h,),
+              SizedBox(
+                height: 20.h,
+              ),
               Expanded(
                   child: ListView(
-                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 0),
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 0),
                 children: [
                   CustomFormCard(
                       title: "Your Name",
                       hintText: "Enter Name",
-                      controller: TextEditingController()),
+                      controller: editProfileController.userNameController),
                   CustomFormCard(
                       title: "Phone Number",
                       hintText: "Enter Phone Number",
-                      controller: TextEditingController()),
+                      controller: editProfileController.userPhoneController),
                   CustomFormCard(
                       title: "Location",
                       hintText: "Enter Location",
-                      controller: TextEditingController()),
-                  SizedBox(height: 80.h,),
-                  CustomButton(onTap: (){}, title: "Update Profile",)
+                      controller: editProfileController.userLocationController),
+                  SizedBox(
+                    height: 80.h,
+                  ),
+                  
+                  
+                     CustomButton(
+                      onTap: () {
+                        print("📤 Update button tapped!");
+                        editProfileController.updateUserProfile();
+                      },
+                      title: "Update Profile",
+                      fontSize: 18,
+                    ),
                 ],
               ))
-
             ],
           )
         ],

@@ -8,6 +8,9 @@ import 'package:hide_and_squeaks/service/api_url.dart';
 import 'package:hide_and_squeaks/utils/ToastMsg/toast_message.dart';
 import 'package:hide_and_squeaks/utils/app_colors/app_colors.dart';
 import 'package:hide_and_squeaks/utils/app_const/app_const.dart';
+import 'package:hide_and_squeaks/view/screens/authentication/reset_password_screen/reset_password_screen.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// ===========================
 /// AUTH CONTROLLER (Simplified)
@@ -123,39 +126,57 @@ class AuthController extends GetxController {
 
 
 /// =====================================================
-  /// ✅ VERIFY OTP FOR FORGET PASSWORD
-  /// =====================================================
-  Future<void> verifyOtpForget() async {
-    if (otpController.text.isEmpty) {
-      showCustomSnackBar("Enter OTP code", isError: true);
-      return;
-    }
-
-    isOtpVerifying.value = true;
-
-    final body = {
-      "verificationCode": int.tryParse(otpController.text.trim()) ?? 0000,
-    };
-
-    try {
-      final response =
-          await ApiClient.postData(ApiUrl.verifyOtpForget, jsonEncode(body));
-      isOtpVerifying.value = false;
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        showCustomSnackBar("Account verified successfully!", isError: false);
-        clearSignUpFields();
-        Get.offAllNamed(AppRoutes.resetPasswordScreen);
-      } else {
-        final msg = response.body['message'] ?? 'Invalid OTP';
-        showCustomSnackBar(msg, isError: true);
-      }
-    } catch (e) {
-      isOtpVerifying.value = false;
-      showCustomSnackBar("Network error. Try again.", isError: true);
-    }
+/// ✅ VERIFY OTP FOR FORGET PASSWORD
+/// =====================================================
+Future<void> verifyOtpForget() async {
+  if (otpController.text.isEmpty) {
+    showCustomSnackBar("Enter OTP code", isError: true);
+    return;
   }
 
+  isOtpVerifying.value = true;
+
+  final body = {
+    "verificationCode": int.tryParse(otpController.text.trim()) ?? 0000,
+  };
+
+  try {
+    final response =
+        await ApiClient.postData(ApiUrl.verifyOtpForget, jsonEncode(body));
+
+    isOtpVerifying.value = false;
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      final responseBody = response.body;
+      final accessToken = responseBody['data']?['accessToken'];
+      final message = responseBody['message'] ?? "Account verified successfully!";
+
+      if (accessToken != null && accessToken.isNotEmpty) {
+        // ✅ Decode JWT using jwt_decoder package
+        final decodedToken = JwtDecoder.decode(accessToken);
+        final userId = decodedToken['id'] ?? decodedToken['_id'] ?? decodedToken['userId'];
+
+        if (userId != null) {
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString('reset_user_id', userId.toString());
+        }
+
+        showCustomSnackBar(message, isError: false);
+        clearSignUpFields();
+        Get.offAll(ResetPasswordScreen(userId: userId));
+      } else {
+        showCustomSnackBar("Access token not found", isError: true);
+      }
+    } else {
+      final msg = response.body['message'] ?? 'Invalid OTP';
+      showCustomSnackBar(msg, isError: true);
+    }
+  } catch (e) {
+    isOtpVerifying.value = false;
+    showCustomSnackBar("Network error. Try again.", isError: true);
+    debugPrint("OTP Verify Error: $e");
+  }
+}
 
 
 

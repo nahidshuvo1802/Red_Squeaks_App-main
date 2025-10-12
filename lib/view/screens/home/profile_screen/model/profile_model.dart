@@ -17,13 +17,13 @@ class MyProfileModel {
     this.data,
   });
 
-  factory MyProfileModel.fromJson(Map<String, dynamic> json) {
-    return MyProfileModel(
-      success: json["success"],
-      message: json["message"],
-      data: json["data"] != null ? ProfileData.fromJson(json["data"]) : null,
-    );
-  }
+  factory MyProfileModel.fromJson(Map<String, dynamic> json) => MyProfileModel(
+        success: json["success"] as bool?,
+        message: json["message"] as String?,
+        data: json["data"] == null
+            ? null
+            : ProfileData.fromJson(json["data"] as Map<String, dynamic>),
+      );
 
   Map<String, dynamic> toJson() => {
         "success": success,
@@ -47,15 +47,13 @@ class ProfileData {
     this.photo,
   });
 
-  factory ProfileData.fromJson(Map<String, dynamic> json) {
-    return ProfileData(
-      id: json["_id"] ?? json["id"],
-      name: json["name"],
-      email: json["email"],
-      phoneNumber: json["phoneNumber"],
-      photo: json["photo"],
-    );
-  }
+  factory ProfileData.fromJson(Map<String, dynamic> json) => ProfileData(
+        id: json["_id"] ?? json["id"],
+        name: json["name"],
+        email: json["email"],
+        phoneNumber: json["phoneNumber"],
+        photo: json["photo"],
+      );
 
   Map<String, dynamic> toJson() => {
         "_id": id,

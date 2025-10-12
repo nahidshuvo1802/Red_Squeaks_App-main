@@ -13,7 +13,7 @@ void main() async {
   di.dependencies();
 
   runApp(const MyApp());
-  const MyApp();
+  const MyApp(); 
 }
 
 class MyApp extends StatelessWidget {

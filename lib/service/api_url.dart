@@ -1,9 +1,9 @@
 class ApiUrl {
   static String socketUrl({required String id}) => "http://3.23.1.245:5002?userId=$id";
-  static const String baseUrl = "https://str-questionnaire-salvation-enlarge.trycloudflare.com" ;
+  static const String baseUrl = "https://ended-newly-cakes-perth.trycloudflare.com" ;
   //"http://3.23.1.245:5002/v1";
   /*"http://3.23.1.245:5002/v1";  https://912f-103-174-189-193.ngrok-free.app/v1*/ /* "http://10.0.60.55:5002/v1" */
-   static const String imageUrl = "http://3.23.1.245:5002/v1/";
+   //static const String imageUrl = "http://3.23.1.245:5002/v1/";
   //static const String imageUrl = "https://counta.s3.us-east-2.amazonaws.com/image/bdf6ef55-dd88-4f1d-a6a1-c942196f223d-1000014755.jpg";
 
   // server url : http://103.174.189.219:5002/api/v1
@@ -23,6 +23,14 @@ class ApiUrl {
   ///============================Profile====================================
   
   static const String getMyProfile = "/api/v1/auth/myprofile";
+  static const String updateMyProfile = "/api/v1/auth/update_my_profile";
+   static String updateUserProfile ="/api/v1/auth/update_my_profile";
+     static String updateProfile  ="/api/v1/auth/update_my_profile";
+       static String updateProfileImage = "/api/v1/auth/update_my_profile";
+
+
+  ///====================Social Feed =========================================
+   static const String getAllSocialFeeds = "/api/v1/video/find_by_all_social_feed_video";
 
 
   static const String forgetPassword = "/api/v1/user/forgot_password";
@@ -71,10 +79,7 @@ class ApiUrl {
     required String userId,
   }) =>
       "/user/retrive/$userId";
-  static String updateUserProfile({
-    required String userId,
-  }) =>
-      "/user/update/$userId";
+ 
   static String getInvoice({
     required String userId,
   }) =>
@@ -133,11 +138,8 @@ class ApiUrl {
   static String deleteUser({required String userId}) => "/user/delete/$userId";
   static String getWallet({required String userId}) =>
       "/wallet/retrive/user/$userId";
-  static String updateProfile({required String userId}) =>
-      "/user/update/$userId";
   // static String updateProfileImage ({required String userId}) => '/user/update/profile-picture/67b813b7421435769e24e547';
-  static String updateProfileImage({required String userId}) =>
-      "/user/update/profile-picture/$userId";
+
   static String getDrugsCategory({required String categoriesName}) =>
       "/drugs/category/$categoriesName";
   static String getSingleDrugs({required String userId}) => "/drugs/$userId";
