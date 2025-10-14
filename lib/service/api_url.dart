@@ -1,9 +1,11 @@
 class ApiUrl {
-  static String socketUrl({required String id}) => "http://3.23.1.245:5002?userId=$id";
-  static const String baseUrl = "https://ended-newly-cakes-perth.trycloudflare.com" ;
+  static String socketUrl({required String id}) =>
+      "http://3.23.1.245:5002?userId=$id";
+  static const String baseUrl =
+      "https://ended-newly-cakes-perth.trycloudflare.com";
   //"http://3.23.1.245:5002/v1";
   /*"http://3.23.1.245:5002/v1";  https://912f-103-174-189-193.ngrok-free.app/v1*/ /* "http://10.0.60.55:5002/v1" */
-   //static const String imageUrl = "http://3.23.1.245:5002/v1/";
+  //static const String imageUrl = "http://3.23.1.245:5002/v1/";
   //static const String imageUrl = "https://counta.s3.us-east-2.amazonaws.com/image/bdf6ef55-dd88-4f1d-a6a1-c942196f223d-1000014755.jpg";
 
   // server url : http://103.174.189.219:5002/api/v1
@@ -18,21 +20,33 @@ class ApiUrl {
   static const String signUp = "/api/v1/user/create_user";
   static const String socialAuth = "/api/v1/user/google_auth";
   static const String verifyOtp = "/api/v1/user/user_verification";
-   static const String verifyOtpForget = "/api/v1/user/verification_forgot_user";
+  static const String verifyOtpForget = "/api/v1/user/verification_forgot_user";
 
   ///============================Profile====================================
-  
+
   static const String getMyProfile = "/api/v1/auth/myprofile";
   static const String updateMyProfile = "/api/v1/auth/update_my_profile";
-  static String updateUserProfile ="/api/v1/auth/update_my_profile";
-  static String updateProfile  ="/api/v1/auth/update_my_profile";
+  static String updateUserProfile = "/api/v1/auth/update_my_profile";
+  static String updateProfile = "/api/v1/auth/update_my_profile";
   static String updateProfileImage = "/api/v1/auth/update_my_profile";
-  static String deleteProfile ({required String userId}) => "/api/v1/auth/delete_account/$userId";
-
+  static String deleteProfile({required String userId}) =>
+      "/api/v1/auth/delete_account/$userId";
 
   ///====================Social Feed =========================================
-   static const String getAllSocialFeeds = "/api/v1/video/find_by_all_social_feed_video";
+  static const String getAllSocialFeeds =
+      "/api/v1/video/find_by_all_social_feed_video";
+  static const String isLikeReact = "/api/v1/react/isLikeReact";
+  static const String isDislikeReact = "/api/v1/react/isDisLikeReact";
+  static const String isShare = "/api/v1/react/isShare";
 
+  ///====================Video Upload======================================
+  static const String videoUpload = "/api/v1/video/upload_video_files";
+
+//video get (my feed video)==================
+  static const String getAllMyVideos = "/api/v1/video/find_myl_social_feed_video";
+  //=======================Video Delete (my video)======================
+  static String deleteVideo({required videoId}) => "/api/v1/video/delete_video_file/$videoId";
+  
 
   static const String forgetPassword = "/api/v1/user/forgot_password";
   static const String mailForgetOtp = "/auth/forget-password/send-otp";
@@ -80,7 +94,7 @@ class ApiUrl {
     required String userId,
   }) =>
       "/user/retrive/$userId";
- 
+
   static String getInvoice({
     required String userId,
   }) =>
@@ -216,8 +230,6 @@ class ApiUrl {
       "/wishlist/retrive/user/$userId"; // Get wish list
   static String deleteWishList({required String userId}) => "/wishlist/delete";
 
-
-
   //======================================Change Password===============================================
 
   static const String changePassword = "/api/v1/user/change_password";
@@ -254,16 +266,12 @@ class ApiUrl {
 
   static const String startVideoCall = '/conversation/start-call';
 
-
   ///========================= feedback retrive   api implementation =========================
   ///
   static String feedbackReview({required String outletId}) =>
-  "/feedback/retrive/therapist/$outletId";
-     // "/feedback/retrive/all/outlet/$outletId";
+      "/feedback/retrive/therapist/$outletId";
+  // "/feedback/retrive/all/outlet/$outletId";
 
-
-   ///========================= Review create or update =========================
+  ///========================= Review create or update =========================
   static const String feedbackCreateOrUpdate = "/feedback/create-or-update";
 }
-
-

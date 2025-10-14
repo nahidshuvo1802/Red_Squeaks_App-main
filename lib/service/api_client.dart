@@ -476,11 +476,11 @@ static Future<Response> submitFeedback({
     var mainHeaders = isContentType
         ? {
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer $bearerToken'
+            'Authorization': bearerToken
           }
         : {
             'Accept': 'application/json',
-            'Authorization': 'Bearer $bearerToken'
+            'Authorization': bearerToken
           };
     try {
       debugPrint('====> API Call: $uri\nHeader: ${headers ?? mainHeaders}');
@@ -578,7 +578,7 @@ static Future<Response> submitFeedback({
 
       var mainHeaders = {
         'Accept': 'application/json',
-        'Authorization': 'Bearer $bearerToken'
+        'Authorization': bearerToken
       };
 
       debugPrint('====> API Call: $uri\nHeader: ${headers ?? mainHeaders}');

@@ -9,6 +9,7 @@ import 'package:hide_and_squeaks/utils/ToastMsg/toast_message.dart';
 import 'package:hide_and_squeaks/utils/app_colors/app_colors.dart';
 import 'package:hide_and_squeaks/utils/app_const/app_const.dart';
 import 'package:hide_and_squeaks/view/screens/authentication/reset_password_screen/reset_password_screen.dart';
+import 'package:hide_and_squeaks/view/screens/home/social_screen/controller/social_controller.dart';
 import 'package:hide_and_squeaks/view/screens/setting/setting_screen/setting_screen.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -447,6 +448,7 @@ Future<void> changePassword({
     Get.offAllNamed(AppRoutes.loginScreen);
     showCustomSnackBar("Logged out successfully", isError: false);
     clearSignUpFields();
+    Get.find<SocialFeedController>().resetReactions();
   }
 
   /// =====================================================

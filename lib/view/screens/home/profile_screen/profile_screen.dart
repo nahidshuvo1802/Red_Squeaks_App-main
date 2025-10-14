@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:hide_and_squeaks/core/app_routes/app_routes.dart';
 import 'package:hide_and_squeaks/helper/images_handle/image_handle.dart';
+import 'package:hide_and_squeaks/view/screens/home/profile_screen/controller/my_video_controller.dart';
 import 'package:hide_and_squeaks/view/screens/home/profile_screen/controller/profile_controller.dart';
 import '../../../../utils/app_const/app_const.dart';
 import '../../../../utils/app_icons/app_icons.dart';
@@ -22,11 +25,13 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   final ProfileController profileController = Get.put(ProfileController());
+  final MyVideoController _myVideoController = Get.put(MyVideoController());
 
   @override
   void initState() {
     super.initState();
-    profileController.getProfile(); // একবারই কল হবে
+    profileController.getProfile();
+    _myVideoController.getAllMyVideos(); // ভিডিওও লোড হবে
   }
 
   @override
@@ -35,116 +40,154 @@ class _ProfileScreenState extends State<ProfileScreen> {
     // profileController.getProfile();
 
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Stack(
-          children: [
-            CustomImage(
-              imageSrc: AppImages.backgroundImage,
-              boxFit: BoxFit.fill,
-              height: MediaQuery.sizeOf(context).height,
-              width: MediaQuery.sizeOf(context).width,
-              fit: BoxFit.cover,
-            ),
-
-            Obx(() {
-              // 🔹 ইমেজ URL হ্যান্ডেল
-              // 🪄 Debug print with emoji
-              debugPrint("🧠 [PROFILE DEBUG]");
-              debugPrint("🖼️ Profile Image URL:${profileController.profileModel.value?.data?.photo}");
-
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  CustomRoyelAppbar(
-                    rightIcon: AppIcons.setting,
-                    titleName: "Profile View",
-                    rightOnTap: () {
-                      Get.toNamed(AppRoutes.settingScreen);
-                    },
-                  ),
-
-                  // 🔹 Profile Picture
-                  CustomNetworkImage(
-                    imageUrl: ImageHandler.imagesHandle(profileController.profileModel.value?.data?.photo),
-                    height: 100.h,
-                    width: 100.w,
-                    boxShape: BoxShape.circle,
-                  ),
-
-                  CustomText(
-                    top: 15.h,
-                    text: profileController.profileModel.value?.data?.name ?? "",
-                    fontSize: 30.w,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                  ),
-
-                  CustomText(
-                    text: profileController.profileModel.value?.data?.location??"",
-                    fontSize: 16.w,
-                    fontWeight: FontWeight.w400,
-                  ),
-
-                  SizedBox(height: 15.h),
-
-                  ///======================= GridView Builder ====================
-                  GridView.builder(
-                    padding: EdgeInsets.symmetric(
-                        horizontal: 16.w, vertical: 16.h),
-                    physics: const NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    itemCount: 12,
-                    itemBuilder: (BuildContext context, int index) {
-                      return GestureDetector(
-                        onTap: () {},
-                        child: Stack(
-                          children: [
-                            CustomNetworkImage(
-                              imageUrl: AppConstants.dog,
-                              height: 104.h,
-                              width: 86.w,
-                              borderRadius: BorderRadius.circular(3),
-                            ),
-                            Positioned(
-                              bottom: 4,
-                              left: 10,
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  CustomImage(
-                                    imageSrc: AppIcons.like,
-                                    height: 8.h,
-                                    width: 8.w,
-                                  ),
-                                  CustomText(
-                                    text: "11k",
-                                    fontSize: 12.w,
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                  SizedBox(width: 30.w),
-                                  CustomImage(imageSrc: AppIcons.trash),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 4,
-                      mainAxisSpacing: 10,
-                      crossAxisSpacing: 10,
+      body: RefreshIndicator(
+        onRefresh: () async {
+          // Reload profile and videos
+          await profileController.getProfile();
+          await _myVideoController.getAllMyVideos();
+        },
+        child: SingleChildScrollView(
+          physics:
+              const AlwaysScrollableScrollPhysics(), // needed for RefreshIndicator
+          child: Stack(
+            children: [
+              CustomImage(
+                imageSrc: AppImages.backgroundImage,
+                boxFit: BoxFit.fill,
+                height: MediaQuery.sizeOf(context).height,
+                width: MediaQuery.sizeOf(context).width,
+                fit: BoxFit.cover,
+              ),
+              Obx(() {
+                final videos = _myVideoController.myVideos;
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    CustomRoyelAppbar(
+                      rightIcon: AppIcons.setting,
+                      titleName: "Profile View",
+                      rightOnTap: () {
+                        Get.toNamed(AppRoutes.settingScreen);
+                      },
                     ),
-                  ),
+                    CustomNetworkImage(
+                      imageUrl: ImageHandler.imagesHandle(
+                          profileController.profileModel.value?.data?.photo),
+                      height: 100.h,
+                      width: 100.w,
+                      boxShape: BoxShape.circle,
+                    ),
+                    CustomText(
+                      top: 15.h,
+                      text: profileController.profileModel.value?.data?.name ??
+                          "",
+                      fontSize: 30.w,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
+                    CustomText(
+                      text: profileController
+                              .profileModel.value?.data?.location ??
+                          "",
+                      fontSize: 16.w,
+                      fontWeight: FontWeight.w400,
+                    ),
+                    SizedBox(height: 15.h),
 
-                  SizedBox(height: 20.h),
-                ],
-              );
-            }),
-          ],
+                    // GridView of videos
+                    videos.isEmpty
+                        ? const Center(child: Text("No videos found"))
+                        : GridView.builder(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 16.w, vertical: 16.h),
+                            physics: const NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            itemCount: videos.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              final video = videos[index];
+                              return GestureDetector(
+                                onTap: () {
+                                  // Play video or open video detail
+                                },
+                                child: Stack(
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(3),
+                                      child: video.thumbnail == null
+                                          ? Container(
+                                              height: 90.h,
+                                              width: 80.w,
+                                              color: Colors.grey[200],
+                                              child: const Center(
+                                                child:
+                                                    CircularProgressIndicator(
+                                                        strokeWidth: 2),
+                                              ),
+                                            )
+                                          : (video.thumbnail!.startsWith("http")
+                                              ? Image.network(
+                                                  video.thumbnail!,
+                                                  height: 90.h,
+                                                  width: 80.w,
+                                                  fit: BoxFit.cover,
+                                                )
+                                              : Image.file(
+                                                  File(video.thumbnail!),
+                                                  height: 90.h,
+                                                  width: 80.w,
+                                                  fit: BoxFit.cover,
+                                                )),
+                                    ),
+                                    Positioned(
+                                      bottom: 4,
+                                      left: 5,
+                                      child: Row(
+                                        children: [
+                                          GestureDetector(
+                                            onTap: () {
+                                              // Like API
+                                            },
+                                            child: CustomImage(
+                                              imageSrc: AppIcons.like,
+                                              height: 10.h,
+                                              width: 10.w,
+                                            ),
+                                          ),
+                                          CustomText(
+                                            text: "${video.like ?? 0}",
+                                            fontSize: 12.w,
+                                            fontWeight: FontWeight.w400,
+                                          ),
+                                          SizedBox(width: 40.w),
+                                          GestureDetector(
+                                            onTap: () {
+                                              _myVideoController
+                                                  .deleteVideo(video.id!);
+                                            },
+                                            child: CustomImage(
+                                                imageSrc: AppIcons.trash),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 4,
+                              mainAxisSpacing: 10,
+                              crossAxisSpacing: 10,
+                            ),
+                          ),
+                    SizedBox(height: 20.h),
+                  ],
+                );
+              }),
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: Navbar(currentIndex: 3),

@@ -50,7 +50,7 @@ class _SocialScreenState extends State<SocialScreen> {
               children: [
                 /// 🔹 Page Title
                 Padding(
-                  padding: EdgeInsets.only(top: 20.h,bottom: 10.h),
+                  padding: EdgeInsets.only(top: 20.h, bottom: 10.h),
                   child: CustomText(
                     text: "Social",
                     fontSize: 26.sp,
@@ -67,41 +67,58 @@ class _SocialScreenState extends State<SocialScreen> {
                     }
 
                     final feeds =
-                        controller.socialFeedModel.value?.data?.socialFeeds ?? [];
+                        controller.socialFeedModel.value?.data?.socialFeeds ??
+                            [];
 
                     if (feeds.isEmpty) {
                       return const Center(
-                        child: Text("😕 No feeds found",
-                            style: TextStyle(color: Colors.white70)),
+                        child: Text(
+                          "😕 No feeds found",
+                          style: TextStyle(color: Colors.white70),
+                        ),
                       );
                     }
 
-                    return ListView.builder(
-                      physics: const BouncingScrollPhysics(),
-                      padding: EdgeInsets.symmetric(vertical: 6.h),
-                      itemCount: feeds.length,
-                      itemBuilder: (context, index) {
-                        final feed = feeds[index];
-                        final videoLink = "${ApiUrl.baseUrl}/${feed.videoUrl}";
-                        final user = feed.user;
-
-                        return CustomSocialCard(
-                          videoUrl: videoLink,
-                          profileImage:
-                              ImageHandler.imagesHandle(user?.photo ?? ""),
-                          userName: user?.name ?? "Unknown",
-                          timeAgo: "3d ago",
-                          caption: feed.title ?? "",
-                          likeCount: feed.like ?? 0,
-                          dislikeCount: feed.dislike ?? 0,
-                          shareCount: feed.share ?? 0,
-                          onProfileTap: () =>
-                              Get.toNamed(AppRoutes.socialProfileView),
-                          onLikeTap: () => debugPrint("❤️ Liked ${feed.id}"),
-                          onDislikeTap: () => debugPrint("👎 Disliked ${feed.id}"),
-                          onShareTap: () => debugPrint("🔗 Shared ${feed.id}"),
-                        );
+                    // 🔹 Wrap ListView.builder with RefreshIndicator
+                    return RefreshIndicator(
+                      onRefresh: () async {
+                        // 🔹 Call your API to reload feeds
+                        await controller.getSocialFeeds();
                       },
+                      color: Colors.white,
+                      backgroundColor: Colors.black,
+                      child: ListView.builder(
+                        physics: const BouncingScrollPhysics(),
+                        padding: EdgeInsets.symmetric(vertical: 6.h),
+                        itemCount: feeds.length,
+                        itemBuilder: (context, index) {
+                          final feed = feeds[index];
+                          final videoLink =
+                              "${ApiUrl.baseUrl}/${feed.videoUrl}";
+                          final user = feed.user;
+
+                          return CustomSocialCard(
+                            videoUrl: videoLink,
+                            id: feed.id??"",
+                            profileImage:
+                                ImageHandler.imagesHandle(user?.photo ?? ""),
+                            userName: user?.name ?? "Unknown",
+                            //id: feed.id??"",
+                            timeAgo: "3d ago",
+                            caption: feed.title ?? "",
+                            likeCount: feed.like ?? 0,
+                            dislikeCount: feed.dislike ?? 0,
+                            shareCount: feed.share ?? 0,
+                            onProfileTap: () =>
+                                Get.toNamed(AppRoutes.socialProfileView),
+                            onLikeTap: () => controller.likePost,
+                            onDislikeTap: () =>
+                                debugPrint("👎 Disliked ${feed.id}"),
+                            onShareTap: () =>
+                                debugPrint("🔗 Shared ${feed.id}"),
+                          );
+                        },
+                      ),
                     );
                   }),
                 ),
