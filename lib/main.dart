@@ -1,19 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'core/app_routes/app_routes.dart';
 import 'core/dependency/dependency_injection.dart';
 import 'utils/app_colors/app_colors.dart';
 
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
- // DeviceUtils.lockDevicePortrait();
-  DependencyInjection di = DependencyInjection();
-  di.dependencies();
-
+  await Permission.microphone.request();
+  await Permission.storage.request();
   runApp(const MyApp());
-  const MyApp(); 
 }
 
 class MyApp extends StatelessWidget {
@@ -28,6 +25,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
             scaffoldBackgroundColor: AppColors.black,
             appBarTheme: const AppBarTheme(
+
                 //surfaceTintColor: AppColors.brinkPink,
                 toolbarHeight: 65,
                 elevation: 0,

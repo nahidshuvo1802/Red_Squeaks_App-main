@@ -7,6 +7,8 @@ import 'package:hide_and_squeaks/core/app_routes/app_routes.dart';
 import 'package:hide_and_squeaks/helper/images_handle/image_handle.dart';
 import 'package:hide_and_squeaks/view/screens/home/profile_screen/controller/my_video_controller.dart';
 import 'package:hide_and_squeaks/view/screens/home/profile_screen/controller/profile_controller.dart';
+import 'package:hide_and_squeaks/view/screens/home/profile_screen/model/my_video_model.dart';
+import 'package:hide_and_squeaks/view/screens/home/profile_screen/profile_video_feed.dart';
 import '../../../../utils/app_const/app_const.dart';
 import '../../../../utils/app_icons/app_icons.dart';
 import '../../../../utils/app_images/app_images.dart';
@@ -109,6 +111,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               return GestureDetector(
                                 onTap: () {
                                   // Play video or open video detail
+                                  Get.to(MyVideoFeedScreen());
                                 },
                                 child: Stack(
                                   children: [

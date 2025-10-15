@@ -2,7 +2,7 @@ class ApiUrl {
   static String socketUrl({required String id}) =>
       "http://3.23.1.245:5002?userId=$id";
   static const String baseUrl =
-      "https://ended-newly-cakes-perth.trycloudflare.com";
+      "https://postposted-julie-farms-sand.trycloudflare.com";
   //"http://3.23.1.245:5002/v1";
   /*"http://3.23.1.245:5002/v1";  https://912f-103-174-189-193.ngrok-free.app/v1*/ /* "http://10.0.60.55:5002/v1" */
   //static const String imageUrl = "http://3.23.1.245:5002/v1/";
@@ -41,6 +41,9 @@ class ApiUrl {
 
   ///====================Video Upload======================================
   static const String videoUpload = "/api/v1/video/upload_video_files";
+
+  ///==================Audio Upload=======================================
+  static const String audioupload = "/api/v1/audio/upload_audio_files";
 
 //video get (my feed video)==================
   static const String getAllMyVideos = "/api/v1/video/find_myl_social_feed_video";
