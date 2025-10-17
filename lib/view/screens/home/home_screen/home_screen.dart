@@ -28,6 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     debugPrint("Decibel level: ${audioController.decibelLevel.value}");
+    audioController.fetchMyRecordings();
 
     final screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
@@ -78,7 +79,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               builder: (context, _) {
                                 return Container(
                                   height: 80,
-                                  width: 320,
+                                  width: double.infinity,
                                   child: CustomPaint(
                                     painter: _WaveformPainter(
                                       decibel,
@@ -227,30 +228,208 @@ class _HomeScreenState extends State<HomeScreen> {
                       Column(
                         children: [
                           Container(
-                            height: 300,
+                            height: 400,
                             width: MediaQuery.sizeOf(context).width,
                             decoration: BoxDecoration(
                               color: AppColors.navbar2,
                             ),
+                            child: Obx(() {
+                          return RefreshIndicator(
+                            color: AppColors.red,
+                            backgroundColor: AppColors.white,
+                            onRefresh: () async {
+                              await audioController.fetchSoundLibrary();
+                            },
                             child: Column(
-                                children: List.generate(4, (value) {
-                              return CustomSoundList();
-                            })),
+                              children: [
+                                // 🔁 Top refresh bar with button
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 20, vertical: 0),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      CustomText(
+                                        text: "Sound Library",
+                                        fontSize: 16.sp,
+                                        fontWeight: FontWeight.w600,
+                                        color: AppColors.white,
+                                      ),
+                                      IconButton(
+                                        icon: Icon(Icons.refresh,
+                                            color: AppColors.red, size: 26),
+                                        onPressed: () async {
+                                          // 🌀 Manual refresh button
+                                          await audioController
+                                              .fetchSoundLibrary();
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                                // 🧭 Loader when fetching data
+                                if (audioController.isFetchingSoundLibrary.value)
+                                  const Center(
+                                    child: CircularProgressIndicator(
+                                        color: Colors.red),
+                                  )
+                                else if (audioController.soundLibrary.isEmpty)
+                                  Expanded(
+                                    child: Center(
+                                      child: CustomText(
+                                        text: "No Music found",
+                                        fontSize: 14.sp,
+                                        color: AppColors.white_50,
+                                      ),
+                                    ),
+                                  )
+                                else
+                                  Expanded(
+                                    child: ListView.builder(
+                                      physics:
+                                          const NeverScrollableScrollPhysics(),
+                                      itemCount:
+                                          audioController.soundLibrary.length,
+                                      itemBuilder: (context, index) {
+                                        final data =audioController.soundLibrary[index];
+
+                                        // 🕒 তারিখ ফরম্যাট
+                                        final formattedDate = data.createdAt !=
+                                                null
+                                            ? "${data.createdAt!.day.toString().padLeft(2, '0')}.${data.createdAt!.month.toString().padLeft(2, '0')}.${data.createdAt!.year} - "
+                                                "${data.createdAt!.hour.toString().padLeft(2, '0')}:${data.createdAt!.minute.toString().padLeft(2, '0')} pm"
+                                            : "Unknown date";
+
+                                        // return CustomRecordList(
+                                        //   index: index,
+                                        //   audioController: audioController,
+                                        //   recordName: "Recording ${index + 1}",
+                                        //   createdAt: formattedDate,
+                                        //   onPlay: ()  async {
+                                        //      await audioController.playOrPauseAudio(index, data.audioUrl);
+                                        //   },
+                                        //   onDelete: () async {
+                                        //     await audioController
+                                        //         .deleteAudioAt(index);
+                                        //   },
+                                        // );
+                                        return CustomSoundList(
+                                          soundName: " $index.  Sound $index",
+                                          onPlay: () async => await audioController.playOrPauseSoundLibraryAudio(index, data.audioUrl),
+                                          index: index,
+                                          audioController: audioController,
+
+                                        );
+                                      },
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          );
+                        }),
                           )
                         ],
                       ),
                     if (homeController.currentIndex.value == 1)
                       Container(
-                        height: 300,
+                        height: 400,
                         width: MediaQuery.sizeOf(context).width,
                         decoration: BoxDecoration(
                           color: AppColors.navbar2,
                         ),
-                        child: Column(
-                            children: List.generate(2, (value) {
-                          return CustomRecordList();
-                        })),
-                      )
+                        child: Obx(() {
+                          return RefreshIndicator(
+                            color: AppColors.red,
+                            backgroundColor: AppColors.white,
+                            onRefresh: () async {
+                              await audioController.fetchMyRecordings();
+                            },
+                            child: Column(
+                              children: [
+                                // 🔁 Top refresh bar with button
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 20, vertical: 1),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      CustomText(
+                                        text: "My Record Library",
+                                        fontSize: 16.sp,
+                                        fontWeight: FontWeight.w600,
+                                        color: AppColors.white,
+                                      ),
+                                      IconButton(
+                                        icon: Icon(Icons.refresh,
+                                            color: AppColors.red, size: 26),
+                                        onPressed: () async {
+                                          // 🌀 Manual refresh button
+                                          await audioController
+                                              .fetchMyRecordings();
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                                // 🧭 Loader when fetching data
+                                if (audioController.isFetching.value)
+                                  const Center(
+                                    child: CircularProgressIndicator(
+                                        color: Colors.red),
+                                  )
+                                else if (audioController.myRecordings.isEmpty)
+                                  Expanded(
+                                    child: Center(
+                                      child: CustomText(
+                                        text: "No recordings found 😔",
+                                        fontSize: 14.sp,
+                                        color: AppColors.white_50,
+                                      ),
+                                    ),
+                                  )
+                                else
+                                  Expanded(
+                                    child: ListView.builder(
+                                      physics:
+                                          const NeverScrollableScrollPhysics(),
+                                      itemCount:
+                                          audioController.myRecordings.length,
+                                      itemBuilder: (context, index) {
+                                        final data =
+                                            audioController.myRecordings[index];
+
+                                        // 🕒 তারিখ ফরম্যাট
+                                        final formattedDate = data.createdAt !=
+                                                null
+                                            ? "${data.createdAt!.day.toString().padLeft(2, '0')}.${data.createdAt!.month.toString().padLeft(2, '0')}.${data.createdAt!.year} - "
+                                                "${data.createdAt!.hour.toString().padLeft(2, '0')}:${data.createdAt!.minute.toString().padLeft(2, '0')} pm"
+                                            : "Unknown date";
+
+                                        return CustomRecordList(
+                                          index: index,
+                                          audioController: audioController,
+                                          recordName: "Recording ${index + 1}",
+                                          createdAt: formattedDate,
+                                          onPlay: ()  async {
+                                             await audioController.playOrPauseAudio(index, data.audioUrl);
+                                          },
+                                          onDelete: () async {
+                                            await audioController
+                                                .deleteAudioAt(index);
+                                          },
+                                        );
+                                      },
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          );
+                        }),
+                      ),
                   ],
                 );
               }),
@@ -284,20 +463,20 @@ class _WaveformPainter extends CustomPainter {
     final glowPaint = Paint()
       ..color = Colors.redAccent.withOpacity(0.25)
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8)
-      ..strokeWidth = 6
+      ..strokeWidth = 5
       ..strokeCap = StrokeCap.round;
 
-    final barCount = 60; // number of bars across the width
+    final barCount = 70; // number of bars across the width
     final midY = size.height / 2;
 
     // normalize sound
-    final normalized = (decibel.abs() / 60).clamp(0.2, 1.0);
-    final amplitude = normalized * 35;
+    final normalized = (decibel.abs() / 60).clamp(0.1, 1.0);
+    final amplitude = normalized * 60;
 
     for (int i = 0; i < barCount; i++) {
       // wave motion + some random pulse
       final wave =
-          sin((i / barCount * 3.14 * 2) + (time * 4)) * amplitude * 0.6 +
+          sin((i / barCount * 3.14 * 2) + (time * 0.5)) * amplitude * 0.6 +
               amplitude * Random().nextDouble() * 0.2;
 
       final height = wave.abs();

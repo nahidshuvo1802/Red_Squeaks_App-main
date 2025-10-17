@@ -5,8 +5,11 @@ import 'package:hide_and_squeaks/service/api_client.dart';
 import 'package:hide_and_squeaks/service/api_url.dart';
 import 'package:hide_and_squeaks/utils/ToastMsg/toast_message.dart';
 import 'package:hide_and_squeaks/view/screens/home/social_screen/model/social_model.dart';
+import 'package:hide_and_squeaks/view/screens/home/social_screen/model/social_profile_model.dart';
 import 'package:hide_and_squeaks/view/screens/home/social_screen/widget/custom_social_card.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:video_thumbnail/video_thumbnail.dart';
 
 class SocialFeedController extends GetxController {
   /// ===============================
@@ -15,7 +18,7 @@ class SocialFeedController extends GetxController {
   RxBool isFeedLoading = false.obs;
   Rx<SocialFeedModel?> socialFeedModel = Rx<SocialFeedModel?>(null);
   RxBool isLiked = false.obs;
-  RxBool isdisLiked = false.obs;
+  RxBool isDisLiked = false.obs;
   RxBool isShared = false.obs;
 
   var likedPosts = <String, bool>{}.obs;
@@ -36,15 +39,12 @@ class SocialFeedController extends GetxController {
       final response = await ApiClient.getData(ApiUrl.getAllSocialFeeds);
 
       // 🔹 Different response formats handled safely
-      if (response is Map<String, dynamic>) {
-        socialFeedModel.value = SocialFeedModel.fromJson(response.body);
-      } else if (response is String) {
-        socialFeedModel.value = socialFeedModelFromJson(response.body);
-      } else if (response.body is String) {
-        socialFeedModel.value = socialFeedModelFromJson(response.body);
-      } else if (response.body is Map<String, dynamic>) {
+      if (response.body is Map<String, dynamic>) {
         socialFeedModel.value =
             SocialFeedModel.fromJson(response.body as Map<String, dynamic>);
+      } else if (response.body is String) {
+        socialFeedModel.value =
+            socialFeedModelFromJson(response.body as String);
       } else {
         debugPrint("❌ [ERROR] Unknown response type: ${response.runtimeType}");
       }
@@ -53,7 +53,7 @@ class SocialFeedController extends GetxController {
       if (socialFeedModel.value != null &&
           socialFeedModel.value?.data?.socialFeeds?.isNotEmpty == true) {
         final firstFeed = socialFeedModel.value!.data!.socialFeeds!.first;
-        debugPrint("✅ [SUCCESS] Fetched Feeds: "
+        debugPrint("✅ [SUCCESS] Feeds: "
             "${socialFeedModel.value!.data!.socialFeeds!.length}");
         debugPrint("🎬 First video title: ${firstFeed.title}");
         debugPrint("🌐 Video URL: ${firstFeed.videoUrl}");
@@ -68,20 +68,18 @@ class SocialFeedController extends GetxController {
     }
   }
 
-  //===============like button=============
   /// ===============================
-  /// LIKE A POST API
+  /// LIKE A POST
   /// ===============================
-
   Future<void> likePost(String postId) async {
-    bool isLiked = likedPosts[postId] ?? false;
-    bool isDisliked = dislikedPosts[postId] ?? false;
+    bool wasLiked = likedPosts[postId] ?? false;
+    bool wasDisliked = dislikedPosts[postId] ?? false;
 
     // Toggle like
-    likedPosts[postId] = !isLiked;
+    likedPosts[postId] = !wasLiked;
 
     // Undo dislike if liked
-    if (likedPosts[postId]! && isDisliked) {
+    if (likedPosts[postId]! && wasDisliked) {
       dislikedPosts[postId] = false;
     }
 
@@ -100,30 +98,31 @@ class SocialFeedController extends GetxController {
           await ApiClient.postData(ApiUrl.isLikeReact, jsonEncode(body));
 
       if (response.statusCode != 200) {
-        // যদি fail করে, rollback করো
-        likedPosts[postId] = isLiked;
+        // Rollback
+        likedPosts[postId] = wasLiked;
         postLikeCounts[postId] = (postLikeCounts[postId] ?? 1) - 1;
         update();
       }
     } catch (e) {
-      // Network error হলে rollback করো
-      likedPosts[postId] = isLiked;
+      // Rollback on error
+      likedPosts[postId] = wasLiked;
       postLikeCounts[postId] = (postLikeCounts[postId] ?? 1) - 1;
       update();
     }
   }
 
-  ///////////////////=============Dislike Post================/////////////////////
-
+  /// ===============================
+  /// DISLIKE A POST
+  /// ===============================
   Future<void> dislikePost(String postId) async {
-    bool isLiked = likedPosts[postId] ?? false;
-    bool isDisliked = dislikedPosts[postId] ?? false;
+    bool wasLiked = likedPosts[postId] ?? false;
+    bool wasDisliked = dislikedPosts[postId] ?? false;
 
     // Toggle dislike
-    dislikedPosts[postId] = !isDisliked;
+    dislikedPosts[postId] = !wasDisliked;
 
     // Undo like if disliked
-    if (dislikedPosts[postId]! && isLiked) {
+    if (dislikedPosts[postId]! && wasLiked) {
       likedPosts[postId] = false;
     }
 
@@ -142,39 +141,42 @@ class SocialFeedController extends GetxController {
           await ApiClient.postData(ApiUrl.isDislikeReact, jsonEncode(body));
 
       if (response.statusCode != 200) {
-        // যদি fail করে, rollback করো
-        dislikedPosts[postId] = isLiked;
-        postLikeCounts[postId] = (postLikeCounts[postId] ?? 1) - 1;
+        // Rollback
+        dislikedPosts[postId] = wasDisliked;
+        postDislikeCounts[postId] = (postDislikeCounts[postId] ?? 1) - 1;
         update();
       }
     } catch (e) {
-      // Network error হলে rollback করো
-      likedPosts[postId] = isLiked;
-      postLikeCounts[postId] = (postLikeCounts[postId] ?? 1) - 1;
+      // Rollback on error
+      dislikedPosts[postId] = wasDisliked;
+      postDislikeCounts[postId] = (postDislikeCounts[postId] ?? 1) - 1;
       update();
     }
   }
-  //share Video =================
-Future<void> shareVideo(videourl) async {
-  try {
-    final videoUrl = videourl;
-    final shareText = "🎬 Check out this video:\n$videoUrl";
-    print("${shareText}");
-    // ignore: deprecated_member_use
-    await Share.share(shareText, subject: "Watch this awesome video!");
-    
-    // ✅ চাইলে এখানে share count update / API call করতে পারো
-    controller.sharePost(videourl);
-  } catch (e) {
-    debugPrint("❌ Share failed: $e");
+
+  /// ===============================
+  /// SHARE VIDEO (Local Share + API)
+  /// ===============================
+  Future<void> shareVideo(String videoUrl) async {
+    try {
+      final shareText = "🎬 Check out this video:\n$videoUrl";
+      await Share.share(shareText, subject: "Watch this awesome video!");
+
+      // ✅ Optional API call for share count
+      await sharePost(videoUrl);
+    } catch (e) {
+      debugPrint("❌ Share failed: $e");
+    }
   }
-}
-///////////////////=============Share Post================///////////////////////
+
+  /// ===============================
+  /// SHARE POST API
+  /// ===============================
   Future<void> sharePost(String postId) async {
     sharedPosts[postId] = true;
     update();
-    final body = {"videofileId": postId};
 
+    final body = {"videofileId": postId};
     try {
       await ApiClient.postData(ApiUrl.isShare, jsonEncode(body));
     } catch (e) {
@@ -183,7 +185,73 @@ Future<void> shareVideo(videourl) async {
     update();
   }
 
-//Reset All=============================
+  /// ===============================
+  /// GET USER PROFILE BY ID
+  /// ===============================
+  RxBool isUserProfileLoading = false.obs;
+  RxList<UserVideo> userProfileVideos = <UserVideo>[].obs;
+  Rx<UserProfile?> userInfo = Rx<UserProfile?>(null);
+
+  Future<void> getUserProfile(String userId) async {
+    try {
+      isUserProfileLoading.value = true;
+      debugPrint("📡 [GET USER PROFILE] Fetching data for user ID: $userId");
+
+      final response =
+          await ApiClient.getData(ApiUrl.getSocialProfilebyId(id: userId));
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> jsonData = response.body is String
+            ? jsonDecode(response.body)
+            : response.body;
+
+        final profileModel = SocialProfileModel.fromJson(jsonData);
+
+        if (profileModel.success && profileModel.data != null) {
+          userProfileVideos.assignAll(profileModel.data!.allVideos);
+          if (profileModel.data!.allVideos.isNotEmpty) {
+            userInfo.value = profileModel.data!.allVideos.first.userId;
+          }
+          debugPrint(
+              "✅ [SUCCESS] ${profileModel.data!.allVideos.length} videos fetched for ${userInfo.value?.name ?? 'Unknown User'}");
+        } else {
+          userProfileVideos.clear();
+          debugPrint("⚠️ [INFO] No videos found for this user.");
+        }
+      } else {
+        debugPrint(
+            "❌ [ERROR] Failed to fetch user profile. Status: ${response.statusCode}");
+        showCustomSnackBar("Failed to fetch user profile.");
+      }
+    } catch (e) {
+      debugPrint("💥 [EXCEPTION] User profile fetch error: $e");
+      showCustomSnackBar("Something went wrong while fetching profile.");
+    } finally {
+      isUserProfileLoading.value = false;
+    }
+  }
+
+  /// Generate a video thumbnail from a video URL
+Future<String?> generateThumbnail(String videoUrl) async {
+  try {
+    final tempDir = await getTemporaryDirectory();
+    final thumbnailPath = await VideoThumbnail.thumbnailFile(
+      video: videoUrl,
+      thumbnailPath: tempDir.path,
+      imageFormat: ImageFormat.PNG,
+      maxHeight: 200, // thumbnail height
+      quality: 75,
+    );
+    return thumbnailPath; // local file path to the generated image
+  } catch (e) {
+    debugPrint("❌ Thumbnail generation failed: $e");
+    return null;
+  }
+}
+
+  /// ===============================
+  /// RESET REACTIONS
+  /// ===============================
   void resetReactions() {
     likedPosts.clear();
     dislikedPosts.clear();

@@ -5,6 +5,7 @@ import 'package:hide_and_squeaks/service/api_url.dart';
 import 'package:hide_and_squeaks/view/components/custom_image/custom_image.dart';
 import 'package:hide_and_squeaks/view/components/custom_text/custom_text.dart';
 import 'package:hide_and_squeaks/view/screens/home/social_screen/controller/social_controller.dart';
+import 'package:hide_and_squeaks/view/screens/home/social_screen/social_profile_view.dart';
 import 'package:hide_and_squeaks/view/screens/home/social_screen/widget/custom_social_card.dart';
 import 'package:hide_and_squeaks/view/screens/navbar/navbar.dart';
 import '../../../../utils/app_images/app_images.dart';
@@ -110,7 +111,7 @@ class _SocialScreenState extends State<SocialScreen> {
                             dislikeCount: feed.dislike ?? 0,
                             shareCount: feed.share ?? 0,
                             onProfileTap: () =>
-                                Get.toNamed(AppRoutes.socialProfileView),
+                                Get.to(SocialProfileView(userId: feed.user?.id??"",)),
                             onLikeTap: () => controller.likePost,
                             onDislikeTap: () =>
                                 debugPrint("👎 Disliked ${feed.id}"),

@@ -823,6 +823,50 @@ static Future<Response> submitFeedback({
     // log.e("Handle Response error} ");
     return response0;
   }
+
+  static Future<Response> uploadAudioFile(File audioFile) async {
+  try {
+    // Get token if required
+    bearerToken = await SharePrefsHelper.getString(AppConstants.bearerToken);
+
+    var headers = {
+      'Accept': 'application/json',
+      'Authorization': bearerToken,
+    };
+
+    var uri = Uri.parse(ApiUrl.baseUrl + ApiUrl.audioupload);
+
+    var request = http.MultipartRequest('POST', uri);
+
+    // ✅ Attach audio file
+    var mimeType = lookupMimeType(audioFile.path) ?? 'audio/aac';
+    request.files.add(
+      await http.MultipartFile.fromPath(
+        'files', // change this key name if your API expects a different field
+        audioFile.path,
+        contentType: MediaType.parse(mimeType),
+      ),
+    );
+
+    request.headers.addAll(headers);
+
+    debugPrint("🎵 Uploading audio to: $uri");
+    debugPrint("🎧 File: ${audioFile.path}");
+
+    http.StreamedResponse response = await request.send();
+    final responseBody = await response.stream.bytesToString();
+
+    debugPrint("✅ Audio upload response [${response.statusCode}]: $responseBody");
+
+    return Response(
+      statusCode: response.statusCode,
+      body: responseBody,
+    );
+  } catch (e) {
+    debugPrint("❌ Audio upload failed: $e");
+    return const Response(statusCode: 1, statusText: somethingWentWrong);
+  }
+}
 }
 
 class MultipartBody {

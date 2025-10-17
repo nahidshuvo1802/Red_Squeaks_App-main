@@ -2,7 +2,7 @@ class ApiUrl {
   static String socketUrl({required String id}) =>
       "http://3.23.1.245:5002?userId=$id";
   static const String baseUrl =
-      "https://postposted-julie-farms-sand.trycloudflare.com";
+      "https://photographic-homeland-scripting-designing.trycloudflare.com";
   //"http://3.23.1.245:5002/v1";
   /*"http://3.23.1.245:5002/v1";  https://912f-103-174-189-193.ngrok-free.app/v1*/ /* "http://10.0.60.55:5002/v1" */
   //static const String imageUrl = "http://3.23.1.245:5002/v1/";
@@ -38,12 +38,18 @@ class ApiUrl {
   static const String isLikeReact = "/api/v1/react/isLikeReact";
   static const String isDislikeReact = "/api/v1/react/isDisLikeReact";
   static const String isShare = "/api/v1/react/isShare";
+  static String getSocialProfilebyId({required String id}) => "/api/v1/video/specific_user_video_feed/$id";
+
 
   ///====================Video Upload======================================
   static const String videoUpload = "/api/v1/video/upload_video_files";
-
+///===================Audio Get===========================================
+  static const String findMyRecordSound = "/api/v1/audio/find_my_all_record_sound";
+  static const String soundLibrary = "/api/v1/audio/find_by_all_audio";
   ///==================Audio Upload=======================================
   static const String audioupload = "/api/v1/audio/upload_audio_files";
+  ///=================Audio Delete=========================================
+  static String audiodelete({required id}) => "/api/v1/audio/delete_audio_file/$id";
 
 //video get (my feed video)==================
   static const String getAllMyVideos = "/api/v1/video/find_myl_social_feed_video";

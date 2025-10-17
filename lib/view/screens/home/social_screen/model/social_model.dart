@@ -141,20 +141,24 @@ class SocialFeed {
 }
 
 class FeedUser {
+  final String? id;
   final String? name;
   final String? photo;
 
   FeedUser({
+    this.id,
     this.name,
     this.photo,
   });
 
   factory FeedUser.fromJson(Map<String, dynamic> json) => FeedUser(
+        id: json['_id'] as String?,
         name: json["name"] as String?,
         photo: json["photo"] as String?,
       );
 
   Map<String, dynamic> toJson() => {
+        "_id": id,
         "name": name,
         "photo": photo,
       };

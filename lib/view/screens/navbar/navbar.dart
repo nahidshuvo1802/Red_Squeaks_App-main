@@ -162,7 +162,7 @@ class _UserNavBarState extends State<Navbar> {
       });
       switch (index) {
         case 0:
-          Get.offAll(() => QrCodeScreen());
+          Get.offAll(() => QrScannerScreen());
           break;
         case 1:
          Get.to(() => SocialScreen());
