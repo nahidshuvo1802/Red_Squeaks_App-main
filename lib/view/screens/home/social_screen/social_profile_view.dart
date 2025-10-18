@@ -67,7 +67,7 @@ class _SocialProfileViewState extends State<SocialProfileView> {
                   CustomRoyelAppbar(titleName: "Profile View"),
                   // 👤 Profile Image
                   CustomNetworkImage(
-                    imageUrl: user.photo ?? "",
+                    imageUrl: ImageHandler.imagesHandle(user.photo ?? ""),
                     height: 100.h,
                     width: 100.w,
                     boxShape: BoxShape.circle,
@@ -95,7 +95,7 @@ class _SocialProfileViewState extends State<SocialProfileView> {
                     itemCount: videos.length,
                     itemBuilder: (context, index) {
                       final video = videos[index];
-                      final thumb = controller.generateThumbnail(video.videoUrl);
+                      final thumb = controller.generateThumbnail(ImageHandler.imagesHandle(video.videoUrl));
                       return GestureDetector(
                         onTap: () {
                           // TODO: open video or navigate
