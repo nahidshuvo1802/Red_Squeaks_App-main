@@ -82,6 +82,7 @@ class AudioController extends GetxController with GetTickerProviderStateMixin {
       decibelLevel.value = event.decibels ?? 0.0;
     });
 
+
     print("🎙 Recording started: $path");
   }
 
@@ -105,7 +106,7 @@ class AudioController extends GetxController with GetTickerProviderStateMixin {
 
       if (response.statusCode == 200) {
         final myRecordModel = MyRecordModel.fromJson(response.body);
-
+        
         if (myRecordModel.success && myRecordModel.data != null) {
           myRecordings.assignAll(myRecordModel.data!.myRecordLibrary);
           print("✅ Total Recordings Fetched: ${myRecordings.length}");
@@ -121,33 +122,53 @@ class AudioController extends GetxController with GetTickerProviderStateMixin {
       isFetching.value = false;
     }
   }
+/// 📡 Fetch Sound Library from API
+/// 📡 Fetch ALL Sound Library items across all pages
+Future<void> fetchSoundLibrary() async {
+  try {
+    print("📥 Fetching Full Sound Library...");
+    isFetchingSoundLibrary.value = true;
 
-  /// 📡 Fetch Sound Library from API
-  Future<void> fetchSoundLibrary() async {
-    try {
-      print("📥 Fetching Sound Library...");
-      isFetchingSoundLibrary.value = true;
+    int currentPage = 1;
+    const int limit = 10;
+    int totalPages = 1;
+    List<LiveEventItem> allItems = [];
 
-      final response = await ApiClient.getData(ApiUrl.soundLibrary);
+    do {
+      final response = await ApiClient.getData(
+        "${ApiUrl.soundLibrary}?page=$currentPage&limit=$limit",
+      );
 
       if (response.statusCode == 200) {
         final soundLibraryModel = SoundLibraryModel.fromJson(response.body);
 
         if (soundLibraryModel.success && soundLibraryModel.data != null) {
-          soundLibrary.assignAll(soundLibraryModel.data!.liveEvent); // 👈 Fixed: data assign করা হয়েছে
-          print("✅ Total Sound Library Items Fetched: ${soundLibrary.length}");
+          final currentItems = soundLibraryModel.data!.liveEvent;
+          totalPages = soundLibraryModel.data!.meta?.totalPage ?? 1;
+
+          allItems.addAll(currentItems);
+          print("✅ Page $currentPage fetched (${currentItems.length} items)");
+
+          currentPage++;
         } else {
           print("⚠️ API returned: ${soundLibraryModel.message}");
+          break;
         }
       } else {
         print("⚠️ HTTP Error: ${response.statusCode}");
+        break;
       }
-    } catch (e) {
-      print("❌ Error fetching sound library: $e");
-    } finally {
-      isFetchingSoundLibrary.value = false;
-    }
+    } while (currentPage <= totalPages);
+
+    soundLibrary.assignAll(allItems);
+    print("🎵 Total Sound Library Items Loaded: ${soundLibrary.length}");
+  } catch (e) {
+    print("❌ Error fetching sound library: $e");
+  } finally {
+    isFetchingSoundLibrary.value = false;
   }
+}
+
 
   /// 🧾 Debug print all recordings
   void printMyRecordings() {
@@ -253,7 +274,7 @@ class AudioController extends GetxController with GetTickerProviderStateMixin {
     final item = myRecordings[index];
     final id = item.id;
 
-    final response = await ApiClient.deleteData('${ApiUrl.audiodelete}/$id');
+    final response = await ApiClient.deleteData(ApiUrl.audiodelete(id: id));
     if (response.statusCode == 200) {
       myRecordings.removeAt(index);
       print("✅ Recording deleted: $id");

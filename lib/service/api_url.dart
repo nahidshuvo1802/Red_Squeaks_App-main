@@ -55,6 +55,14 @@ class ApiUrl {
   static const String getAllMyVideos = "/api/v1/video/find_myl_social_feed_video";
   //=======================Video Delete (my video)======================
   static String deleteVideo({required videoId}) => "/api/v1/video/delete_video_file/$videoId";
+
+  //==========================Terms & Conditions========================================
+  static String termsAndConditions = "/api/v1/setting/find_by_terms_conditions";
+  //==========================Privacy Policy=========================================
+  static String privacyPolicy ="/api/v1/setting/find_by_privacy_policys";
+
+  //==========================About Us============================================
+  static String aboutUs ="/api/v1/setting/find_by_about_us";
   
 
   static const String forgetPassword = "/api/v1/user/forgot_password";
@@ -66,9 +74,7 @@ class ApiUrl {
   static const String getCategories = "/categories/";
   static const String postAddToCart = "/carts/add-to-cart";
   static const String getHomeService = "/service-category/retrive/all";
-  static const String privacyPolicy = "/privacy-policy/retrive";
   static const String termsCondition = "/terms-condition/retrive";
-  static const String aboutUs = "/about-us/retrive";
   static const String getSliderImage = "/slider/retrive/all";
   static const String getPopularService = "/service/popular/retrive";
   static const String getOffersService = "/service/offered/retrive";

@@ -1,16 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:hide_and_squeaks/utils/app_colors/app_colors.dart';
 import 'package:hide_and_squeaks/view/components/custom_text/custom_text.dart';
+import 'package:hide_and_squeaks/view/screens/setting/controller/misc_controller.dart';
+import 'package:hide_and_squeaks/view/screens/setting/setting_screen/setting_screen.dart';
 import '../../../../utils/app_images/app_images.dart';
 import '../../../components/custom_image/custom_image.dart';
 import '../../../components/custom_royel_appbar/custom_royel_appbar.dart';
 
+// ignore: must_be_immutable
 class TermsConditionScreen extends StatelessWidget {
-  const TermsConditionScreen({super.key});
+  TermsConditionScreen({super.key});
+
+  PolicyController controller = Get.put(PolicyController());
+
+    bool _containsHtml(String text) {
+    final htmlPattern =
+        RegExp(r"<[^>]*>", multiLine: true, caseSensitive: false);
+    return htmlPattern.hasMatch(text);
+  }
 
   @override
   Widget build(BuildContext context) {
+    final termsText = controller.termsText.toString();
     return Scaffold(
       body: Stack(
         children: [
@@ -46,35 +61,34 @@ class TermsConditionScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(
                         25), // Optional for smooth corners
                   ),
-                  child: Column(
-                    children: [
-                      CustomText(
-                        text:
-                        "ravida elit enim. lobortis, ex orci lobortis, Donec orci elit felis, luctus ultrices odio tincidunt cursus elit ex nisi vehicula, Morbi Nunc Morbi venenatis sollicitudin. tortor. dui non quam dui. nibh tortor. sit viverra maximus ipsum",
-                        fontSize: 14.w,
-                        fontWeight: FontWeight.w400,
-                        maxLines: 10,
-                        textAlign: TextAlign.start,
-                      ),
-                      CustomText(
-                        top: 10,
-                        text:
-                        "ravida elit enim. lobortis, ex orci lobortis, Donec orci elit felis, luctus ultrices odio tincidunt cursus elit ex nisi vehicula, Morbi Nunc Morbi venenatis sollicitudin. tortor. dui non quam dui. nibh tortor. sit viverra maximus ipsum",
-                        fontSize: 14.w,
-                        fontWeight: FontWeight.w400,
-                        maxLines: 10,
-                        textAlign: TextAlign.start,
-                      ),
-                      CustomText(
-                        top: 10,
-                        text:
-                        "ravida elit enim. lobortis, ex orci lobortis, Donec orci elit felis, luctus ultrices odio tincidunt cursus elit ex nisi vehicula, Morbi Nunc Morbi venenatis sollicitudin. tortor. dui non quam dui. nibh tortor. sit viverra maximus ipsum",
-                        fontSize: 14.w,
-                        fontWeight: FontWeight.w400,
-                        maxLines: 10,
-                        textAlign: TextAlign.start,
-                      ),
-                    ],
+                  child:SingleChildScrollView(
+                    child: _containsHtml(termsText)
+                        ? Html(
+                            data: termsText,
+                            style: {
+                              "body": Style(
+                                backgroundColor: Colors.transparent,
+                                color: Colors.white,
+                                fontSize: FontSize(14.w),
+                                fontWeight: FontWeight.w400,
+                                
+                              ),
+                              "p": Style(backgroundColor:Colors.transparent,color: Colors.white),
+                              "div": Style(backgroundColor: Colors.transparent,color: Colors.white),
+                              "span":
+                                  Style(backgroundColor:Colors.transparent,color: Colors.white),
+                                  "list" :Style(backgroundColor:Colors.transparent,color: Colors.white),
+                                  "a" : Style(backgroundColor:Colors.transparent,color: Colors.white),
+                                  "ol" :Style(backgroundColor:Colors.transparent,color: Colors.white),
+                                  "li" :Style(backgroundColor:Colors.transparent,color: Colors.white),
+                            },
+                          )
+                        : CustomText(
+                            text: termsText,
+                            fontSize: 14.w,
+                            fontWeight: FontWeight.w400,
+                            textAlign: TextAlign.start,
+                          ),
                   ),
                 ),
               )

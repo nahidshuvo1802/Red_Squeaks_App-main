@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:hide_and_squeaks/utils/app_icons/app_icons.dart';
 import 'package:hide_and_squeaks/view/components/custom_image/custom_image.dart';
 import 'package:hide_and_squeaks/view/screens/home/home_screen/controller/audio_controller.dart';
+import 'package:hide_and_squeaks/view/screens/home/home_screen/widget/show_delete_dialog.dart';
 import '../../../../../utils/app_colors/app_colors.dart';
 import '../../../../components/custom_text/custom_text.dart';
 
